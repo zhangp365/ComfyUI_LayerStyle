@@ -75,7 +75,7 @@ class PersonMaskUltraV2:
             with open(a_person_mask_generator_model_path, "rb") as f:
                 a_person_mask_generator_model_buffer = f.read()
             image_segmenter_base_options = mp.tasks.BaseOptions(model_asset_buffer=a_person_mask_generator_model_buffer,
-                delegate = 1)
+                delegate = 0)
             self.options = mp.tasks.vision.ImageSegmenterOptions(
                 base_options=image_segmenter_base_options,
                 running_mode=mp.tasks.vision.RunningMode.IMAGE,
