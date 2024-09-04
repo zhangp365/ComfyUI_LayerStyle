@@ -13,6 +13,7 @@ class PersonMaskUltraV2:
     def __init__(self):
         # download the model if we need it
         get_a_person_mask_generator_model_path()
+        self.option = None
 
     @classmethod
     def INPUT_TYPES(self):
@@ -67,17 +68,18 @@ class PersonMaskUltraV2:
                           accessories, background, confidence,
                           detail_method, detail_erode, detail_dilate,
                           black_point, white_point, process_detail, device, max_megapixels,):
-
-        import mediapipe as mp
-        a_person_mask_generator_model_path = get_a_person_mask_generator_model_path()
-        a_person_mask_generator_model_buffer = None
-        with open(a_person_mask_generator_model_path, "rb") as f:
-            a_person_mask_generator_model_buffer = f.read()
-        image_segmenter_base_options = mp.tasks.BaseOptions(model_asset_buffer=a_person_mask_generator_model_buffer)
-        options = mp.tasks.vision.ImageSegmenterOptions(
-            base_options=image_segmenter_base_options,
-            running_mode=mp.tasks.vision.RunningMode.IMAGE,
-            output_category_mask=True)
+        if self.option is None:
+            import mediapipe as mp
+            a_person_mask_generator_model_path = get_a_person_mask_generator_model_path()
+            a_person_mask_generator_model_buffer = None
+            with open(a_person_mask_generator_model_path, "rb") as f:
+                a_person_mask_generator_model_buffer = f.read()
+            image_segmenter_base_options = mp.tasks.BaseOptions(model_asset_buffer=a_person_mask_generator_model_buffer,
+                delegate = 1)
+            self.options = mp.tasks.vision.ImageSegmenterOptions(
+                base_options=image_segmenter_base_options,
+                running_mode=mp.tasks.vision.RunningMode.IMAGE,
+                output_category_mask=True)
         # Create the image segmenter
         ret_images = []
         ret_masks = []
@@ -87,7 +89,7 @@ class PersonMaskUltraV2:
         else:
             local_files_only = False
 
-        with mp.tasks.vision.ImageSegmenter.create_from_options(options) as segmenter:
+        with mp.tasks.vision.ImageSegmenter.create_from_options(self.options) as segmenter:
             for image in images:
                 _image = torch.unsqueeze(image, 0)
                 orig_image = tensor2pil(_image).convert('RGB')
