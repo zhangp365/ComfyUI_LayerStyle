@@ -144,25 +144,25 @@ class PersonMaskUltraV2:
                 tensor_mask = torch.from_numpy(tensor_mask)[None,]
                 _mask = tensor_mask.squeeze(3)[..., 0]
 
-                detail_range = detail_erode + detail_dilate
-                if process_detail:
-                    if detail_method == 'GuidedFilter':
-                        _mask = guided_filter_alpha(pil2tensor(orig_image), _mask, detail_range // 6 + 1)
-                        _mask = tensor2pil(histogram_remap(_mask, black_point, white_point))
-                    elif detail_method == 'PyMatting':
-                        _mask = tensor2pil(
-                            mask_edge_detail(pil2tensor(orig_image), _mask,
-                                             detail_range // 8 + 1, black_point, white_point))
-                    else:
-                        _trimap = generate_VITMatte_trimap(_mask, detail_erode, detail_dilate)
-                        _mask = generate_VITMatte(orig_image, _trimap, local_files_only=local_files_only, device=device, max_megapixels=max_megapixels)
-                        _mask = tensor2pil(histogram_remap(pil2tensor(_mask), black_point, white_point))
+            detail_range = detail_erode + detail_dilate
+            if process_detail:
+                if detail_method == 'GuidedFilter':
+                    _mask = guided_filter_alpha(pil2tensor(orig_image), _mask, detail_range // 6 + 1)
+                    _mask = tensor2pil(histogram_remap(_mask, black_point, white_point))
+                elif detail_method == 'PyMatting':
+                    _mask = tensor2pil(
+                        mask_edge_detail(pil2tensor(orig_image), _mask,
+                                            detail_range // 8 + 1, black_point, white_point))
                 else:
-                    _mask = mask2image(_mask)
+                    _trimap = generate_VITMatte_trimap(_mask, detail_erode, detail_dilate)
+                    _mask = generate_VITMatte(orig_image, _trimap, local_files_only=local_files_only, device=device, max_megapixels=max_megapixels)
+                    _mask = tensor2pil(histogram_remap(pil2tensor(_mask), black_point, white_point))
+            else:
+                _mask = mask2image(_mask)
 
-                ret_image = RGB2RGBA(orig_image, _mask)
-                ret_images.append(pil2tensor(ret_image))
-                ret_masks.append(image2mask(_mask))
+            ret_image = RGB2RGBA(orig_image, _mask)
+            ret_images.append(pil2tensor(ret_image))
+            ret_masks.append(image2mask(_mask))
 
             log(f"{NODE_NAME} Processed {len(ret_images)} image(s).", message_type='finish')
             return (torch.cat(ret_images, dim=0), torch.cat(ret_masks, dim=0),)
