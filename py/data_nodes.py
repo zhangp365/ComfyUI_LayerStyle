@@ -8,7 +8,7 @@ class SeedNode:
     @classmethod
     def INPUT_TYPES(self):
         return {"required": {
-                "seed":("INT", {"default": 0, "min": 0, "max": 99999999999999999999, "step": 1}),
+                "seed":("INT", {"default": 0, "min": 0, "max": 1e18, "step": 1}),
             },}
 
     RETURN_TYPES = ("INT",)
@@ -328,7 +328,7 @@ class IntegerNode:
     @classmethod
     def INPUT_TYPES(self):
         return {"required": {
-                "int_value":("INT", {"default": 0, "min": -99999999999999999999, "max": 99999999999999999999, "step": 1}),
+                "int_value":("INT", {"default": 0, "min": -1e18, "max": 1e18, "step": 1}),
             },}
 
     RETURN_TYPES = ("INT", "STRING",)
@@ -337,7 +337,7 @@ class IntegerNode:
     CATEGORY = '😺dzNodes/LayerUtility/Data'
 
     def integer_node(self, int_value):
-        return (int_value, str(int_value))
+        return (int(int_value), str(int_value))
 
 class FloatNode:
     def __init__(self):
@@ -345,7 +345,7 @@ class FloatNode:
     @classmethod
     def INPUT_TYPES(self):
         return {"required": {
-                "float_value":  ("FLOAT", {"default": 0, "min": -99999999999999999999, "max": 99999999999999999999, "step": 0.00001}),
+                "float_value":  ("FLOAT", {"default": 0, "min": -1e18, "max": 1e18, "step": 0.00001}),
             },}
 
     RETURN_TYPES = ("FLOAT", "STRING",)

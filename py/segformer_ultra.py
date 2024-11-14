@@ -38,7 +38,7 @@ class Segformer_B2_Clothes:
 
     def __init__(self):
         self.NODE_NAME = 'SegformerB2ClothesUltra'
-        pass
+
 
     # Labels: 0: "Background", 1: "Hat", 2: "Hair", 3: "Sunglasses", 4: "Upper-clothes", 5: "Skirt",
     # 6: "Pants", 7: "Dress", 8: "Belt", 9: "Left-shoe", 10: "Right-shoe", 11: "Face",
@@ -485,6 +485,8 @@ class SegformerUltraV2:
             # 创建agnostic-mask图像
             mask_image = Image.fromarray((1 - mask) * 255)
             mask_image = mask_image.convert("L")
+            brightness_image = ImageEnhance.Brightness(mask_image)
+            mask_image = brightness_image.enhance(factor=1.08)
             _mask = pil2tensor(mask_image)
 
             detail_range = detail_erode + detail_dilate

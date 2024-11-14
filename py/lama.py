@@ -39,7 +39,6 @@ class LaMa:
         l_images = []
         l_masks = []
         ret_images = []
-        print(f"########################mask.shape={mask.shape},dim={mask.dim()}")
 
         for l in image:
             l_images.append(torch.unsqueeze(l, 0))
@@ -68,7 +67,7 @@ class LaMa:
                     _mask = tensor2pil(expand_mask(image2mask(_mask), mask_grow, mask_blur))
                 
                 ret_image = pixel_spread(tensor2pil(_image).convert('RGB'), ImageChops.invert(_mask.convert('RGB')))
-                ret_images.append(ret_image)
+                ret_images.append(pil2tensor(ret_image))
         else:
             temp_dir = os.path.join(folder_paths.get_temp_directory(), generate_random_name('_lama_', '_temp', 16))
             if os.path.isdir(temp_dir):
